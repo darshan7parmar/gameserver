@@ -15,13 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from rest_framework import routers
-from gameserver.gameserverapp import views
-
-
-router = routers.DefaultRouter()
-router.register(r'gameserver', views.GameServerViewSet)
+from gameserverapp import views
 
 urlpatterns = [
+    url(r'^gameserver/game/create', views.create),
     url(r'^admin/', admin.site.urls),
 ]
