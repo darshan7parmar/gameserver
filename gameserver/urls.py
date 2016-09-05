@@ -19,6 +19,7 @@ from gameserverapp import views
 
 urlpatterns = [
     url(r'^gameserver/game/create', views.create),
+    url(r'^gameserver/game/join', views.join),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', admin.site.urls),
 ]

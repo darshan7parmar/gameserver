@@ -119,7 +119,18 @@ USE_L10N = True
 USE_TZ = True
 
 
+#REST FRAMEWORK related Settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    )
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+min_players=2
+max_players=5
