@@ -11,4 +11,11 @@ from .serializers import *
 
 @api_view(['GET', 'POST'])
 def create(request):
-	return Response({'status': 'Game Created'})
+	if request.method == 'POST':
+		print (request.data)
+	
+
+
+@api_view(['GET'])
+def info(request):
+	pass
