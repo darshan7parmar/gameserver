@@ -8,7 +8,8 @@ class Player(models.Model):
 	player_id=models.CharField(max_length=20)
 
 	def __str__(self):              # __unicode__ on Python 2
-		return str(self.id)
+		return str(self.nick)
+
 
 class Game(models.Model):
 	STATUS = (
