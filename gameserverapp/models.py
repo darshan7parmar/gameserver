@@ -6,7 +6,7 @@ from django.contrib.postgres.fields import JSONField
 class Player(models.Model):
 	nick=models.CharField(max_length=20)
 	player_id=models.CharField(max_length=20)
-
+	local_score=models.IntegerField()
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.nick)
 
@@ -27,7 +27,7 @@ class Game(models.Model):
 	board=ArrayField(ArrayField(models.CharField(max_length=1)))
 	min_players=models.IntegerField()
 	max_players=models.IntegerField()
-
+	pass_count=models.IntegerField()
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.id)
 

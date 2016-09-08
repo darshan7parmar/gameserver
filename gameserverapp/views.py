@@ -16,7 +16,7 @@ from .serializers import *
 def create(request):
 	#Only Post Requests are allowed
 	data=request.data
-	nick=data['nick']
+	nick=data.get('nick')
 	player=Player.objects.create(nick=nick,player_id='xyz')
 	game=Game.objects.create(game_status='w',scores="{}",admin_player=player,words_done=[""],board=[['a'],['b']],turn_seq="xyz")
 	game.players.add(player)
@@ -29,8 +29,8 @@ def create(request):
 @parser_classes((JSONParser,))
 def join(request):
 	data=request.data
-	game_id=data['game_id']
-	nick=data['nick']
+	game_id=data.get('game_id')
+	nick=data.get('nick')
 
 	# Check if Game exists
 	try:
@@ -49,7 +49,7 @@ def join(request):
 @parser_classes((JSONParser,))
 def info(request):
 	data=request.data
-	game_id=data['game_id']
+	game_id=data.get('game_id')
 	#player_id=data['player_id']
 
 	# Check if Game exists
@@ -67,8 +67,8 @@ def info(request):
 @parser_classes((JSONParser,))
 def start():
 	data=request.data
-	game_id=data['game_id']
-	player_id=data['player_id']
+	game_id=data.get('game_id')
+	player_id=data.get('player_id')
 
 	# Check if Game exists
 	try:
@@ -94,6 +94,39 @@ def start():
 	return Response(content,status=status.HTTP_201_CREATED)
 
 
+def play(request):
+	data=request.data
+	player_id=data.get('player_id')
+	game_id=data.get('game_id')
+	word=data.get('word')
+	start_loc=data.get('start-loc')
+	direction=data.get('direction')
+
+	try:
+		game=Game.objects.get(id=game_id)
+	except Game.DoesNotExist:
+		content = {'detail': 'Game does not exist'}
+		return Response(content,status=status.HTTP_404_NOT_FOUND)
+
+	try:
+		player=Player.objects.get(id=player_id)
+	except Game.DoesNotExist:
+		content = {'detail': 'Player does not exist'}
+		return Response(content,status=status.HTTP_404_NOT_FOUND)
+
+	#if word is empty
+	if not word:
+		game.pass_count+=1
+	else:
+		
+
+
+
+
+#ending game by changing it's status
+def endgame(game):
+	game.game_status="f"
+	game.save()			
 
 
 # game_status=models.CharField(max_length=1,choices=STATUS)
