@@ -4,9 +4,7 @@ from django.contrib.postgres.fields import JSONField
 # Create your models here.
 
 class Player(models.Model):
-	nick=models.CharField(max_length=20)
-	player_id=models.CharField(max_length=20)
-	local_score=models.IntegerField()
+	nick=models.CharField(max_length=20,blank=True)
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.nick)
 
