@@ -11,7 +11,7 @@ class Player(models.Model):
 
 class Game(models.Model):
 	STATUS = (
-    ('w', 'Waiting to start'),
+    ('w', 'Waiting for start'),
     ('s', 'Started'),
     ('f', 'Finished'),)
 	game_status=models.CharField(max_length=1,choices=STATUS)
