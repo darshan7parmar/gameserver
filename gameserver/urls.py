@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^gameserver/game/create', views.create),
     url(r'^gameserver/game/join', views.join),
     url(r'^gameserver/game/info', views.info),
+    url(r'^gameserver/game/start', views.start),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', admin.site.urls),
 ]

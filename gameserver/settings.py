@@ -76,16 +76,7 @@ WSGI_APPLICATION = 'gameserver.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gameserverdb',
-        'USER': 'admin',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
+
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
@@ -130,7 +121,31 @@ REST_FRAMEWORK = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
+import dj_database_url
+DATABASES['default'] = dj_database_url.config()
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+ALLOWED_HOSTS = ['*']
+
+DEBUG = False
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
 
 min_players=2
 max_players=5

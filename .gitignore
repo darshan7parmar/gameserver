@@ -1,4 +1,6 @@
 *.pyc
-*.sqlite3
-*DS_Store
+db.sqlite3
+myvenv
+__pycache__
+local_settings.py
 gameserverapp/migrations

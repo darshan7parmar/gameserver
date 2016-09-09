@@ -57,6 +57,7 @@ def join(request):
 	player_id=data.get('player_id')
 
 	game = check_if_game_exists(game_id)
+	
 	if not game:
 		content = {'detail': 'Game does not exist'}
 		return Response(content,status=status.HTTP_404_NOT_FOUND)
@@ -133,34 +134,47 @@ def info(request):
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))
-def start():
+def start(request):
 	data=request.data
 	game_id=data.get('game_id')
 	player_id=data.get('player_id')
 
 	# Check if Game exists
-	try:
-		game=Game.objects.get(id=game_id)
-	except Game.DoesNotExist:
+	game = check_if_game_exists(game_id)
+	
+	if not game:
 		content = {'detail': 'Game does not exist'}
 		return Response(content,status=status.HTTP_404_NOT_FOUND)
 
+	#Check if Player Exists
+	player=check_if_player_exists(player_id)
+	
+	if not player:
+		content = {'detail': 'Player does not exist'}
+		return Response(content,status=status.HTTP_404_NOT_FOUND)
+
 	#Check if Player is admin
-	if not str(game.admin_player.id) == game_id:
+	if not game.admin_player.id == int(player_id):
 		content={'detail':'You are not authorized to start this game'}
 		return Response(content,status=status.HTTP_401_UNAUTHORIZED)
 
 	#start the game by changing status and 
-	num_players=count(game.players)
+	num_players=game.players.all().count()
 	if num_players < game.min_players :
 		content={'detail': 'Please wait for more players to join'}
 		return Response(content,status=status.HTTP_417_EXPECTATION_FAILED)
 	
+	# if game is not in waiting state
+
+	if game.game_status != "w":
+		content={'detail': 'Game Already Started or Finished'}
+		return Response(content,status=status.HTTP_417_EXPECTATION_FAILED)	
+
 	game.game_status="s"
 	game.save()	
 	content=GameSerializer(game)
-	return Response(content,status=status.HTTP_201_CREATED)
 
+	return Response(content.data,status=status.HTTP_201_CREATED)
 
 def play(request):
 	data=request.data
@@ -170,15 +184,17 @@ def play(request):
 	start_loc=data.get('start-loc')
 	direction=data.get('direction')
 
-	try:
-		game=Game.objects.get(id=game_id)
-	except Game.DoesNotExist:
+	
+	game = check_if_game_exists(game_id)
+	
+	if not game:
 		content = {'detail': 'Game does not exist'}
 		return Response(content,status=status.HTTP_404_NOT_FOUND)
 
-	try:
-		player=Player.objects.get(id=player_id)
-	except Game.DoesNotExist:
+	#Check if Player Exists
+	player=check_if_player_exists(player_id)
+	
+	if not player:
 		content = {'detail': 'Player does not exist'}
 		return Response(content,status=status.HTTP_404_NOT_FOUND)
 
