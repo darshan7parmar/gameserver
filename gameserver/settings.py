@@ -75,16 +75,26 @@ WSGI_APPLICATION = 'gameserver.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-DATABASES = {
-    'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gameserverdb',
-        'USER': 'admin',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
+# DATABASES = {
+#     'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'gameserverdb',
+#         'USER': 'admin',
+#         'PASSWORD': 'password',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'gameserverdb',
+#         'USER': 'admin',
+#         'PASSWORD': 'password',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
 
 
 # Password validation
@@ -118,7 +128,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+ON_HEROKU=True
 
 #REST FRAMEWORK related Settings
 
@@ -143,8 +153,16 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
 
+
 import dj_database_url
-DATABASES['default'] = dj_database_url.config()
+
+if ON_HEROKU:
+    DATABASE_URL = 'postgresql:///postgresql'
+else:
+    DATABASE_URL = 'postgres://admin:password@localhost:5432/gameserverdb'
+
+
+DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
