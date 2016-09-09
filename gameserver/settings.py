@@ -75,6 +75,16 @@ WSGI_APPLICATION = 'gameserver.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+DATABASES = {
+    'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'gameserverdb',
+        'USER': 'admin',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 
 
 # Password validation
@@ -141,11 +151,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 DEBUG = False
-
-try:
-    from .local_settings import *
-except ImportError:
-    pass
 
 min_players=2
 max_players=5
