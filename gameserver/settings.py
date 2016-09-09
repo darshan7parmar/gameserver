@@ -157,7 +157,7 @@ STATICFILES_DIRS = (
 import dj_database_url
 
 if ON_HEROKU:
-    DATABASE_URL = 'postgresql:///postgresql'
+    DATABASE_URL = 'postgresql://postgresql'
 else:
     DATABASE_URL = 'postgres://admin:password@localhost:5432/gameserverdb'
 
