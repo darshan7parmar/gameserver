@@ -31,7 +31,7 @@ def create(request):
 		player=create_player(nick)
 	
 	game=Game.objects.create(game_status='w',scores="{}",admin_player=player,words_done=[""],
-		board=[['a'],['b']],turn_seq="xyz",min_players=2,max_players=5,pass_count=0)
+		board=[['a'],['b']['c']['d']],turn_seq="xyz",min_players=2,max_players=5,pass_count=0)
 	game.players.add(player)
 	content = {'game_id':game.id,'player_id':player.id,'nick':player.nick}
 	return Response(content,status=status.HTTP_201_CREATED)
@@ -69,8 +69,12 @@ def join(request):
 			content = {'detail': 'Player does not exist'}
 			return Response(content,status=status.HTTP_404_NOT_FOUND)	
 	else:
-		player=create_player(nick)
-	
+		maxlimitbool=check_if_max_limit_reached(game)
+		if maxlimitbool:
+			content = {'detail': 'Maximum Player Already Joined'}
+			return Response(content,status=status.HTTP_406_NOT_ACCEPTABLE)	 
+		
+		player=create_player(nick)	
 	# if player has already joined game
 	if  game.players.all().filter(id=player.id).exists():
 		content = {'detail': 'You have already joined the game'}
@@ -105,6 +109,11 @@ def check_if_player_exists(player_id):
 		return None
 	return player
 
+def check_if_max_limit_reached(game):
+	num_players=game.players.all().count()
+	if num_players >= game.max_players :
+		return True
+	return False
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))
@@ -183,7 +192,6 @@ def play(request):
 	word=data.get('word')
 	start_loc=data.get('start-loc')
 	direction=data.get('direction')
-
 	
 	game = check_if_game_exists(game_id)
 	
@@ -197,12 +205,15 @@ def play(request):
 	if not player:
 		content = {'detail': 'Player does not exist'}
 		return Response(content,status=status.HTTP_404_NOT_FOUND)
+	
+		game.pass_count=0
 
-	#if word is empty
-	if not word:
-		game.pass_count+=1
-	else:
-		pass
+def passturn(request):
+	data=request.data
+	player_id=data.get('player_id')
+	game_id=data.get('game_id')
+
+
 #ending game by changing it's status
 def endgame(game):
 	game.game_status="f"
