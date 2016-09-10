@@ -128,8 +128,14 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-ON_HEROKU=True
+ON_HEROKU=False
 
+
+min_players=2
+max_players=5
+board_rows=15
+board_cols=15
+num_words=10
 #REST FRAMEWORK related Settings
 
 REST_FRAMEWORK = {
@@ -168,7 +174,4 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ALLOWED_HOSTS = ['*']
 
-DEBUG = False
-
-min_players=2
-max_players=5
+#DEBUG = False

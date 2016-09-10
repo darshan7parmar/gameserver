@@ -8,6 +8,12 @@ class Player(models.Model):
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.nick)
 
+class Board(models.Model):
+	grid=ArrayField(ArrayField(models.CharField(max_length=1)),null=True)
+	board_rows=models.IntegerField(default=15)
+	board_cols=models.IntegerField(default=15)
+	num_words=models.IntegerField(default=10)
+	words_list=ArrayField(models.CharField(max_length=50))
 
 class Game(models.Model):
 	STATUS = (
@@ -17,19 +23,17 @@ class Game(models.Model):
 	game_status=models.CharField(max_length=1,choices=STATUS)
 	players = models.ManyToManyField(Player,related_name='player')
 	admin_player=models.ForeignKey(Player,related_name='admin_player')
+	turn_sequence=ArrayField(models.CharField(max_length=50))
 	current_player=models.ForeignKey(Player,related_name='current_player',null=True)
-	#to decide
-	turn_seq=models.CharField(max_length=20)
-	words_done=ArrayField(models.CharField(max_length=20))
+	words_done=ArrayField(models.CharField(max_length=50))
 	scores=JSONField()
-	board=ArrayField(ArrayField(models.CharField(max_length=1)))
+	board=models.ForeignKey(Board,related_name="board",null=True)
 	min_players=models.IntegerField()
 	max_players=models.IntegerField()
 	pass_count=models.IntegerField()
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.id)
-
-
+	
 
 
 
