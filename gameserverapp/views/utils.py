@@ -26,8 +26,8 @@ def get_random_words(num_words):
 	for i in range(0,num_words):
 		random_word=random.choice(WORDS)
 		random_word = re.sub('[^0-9a-zA-Z]+', '', random_word)
-		if len(random_word) >=board_rows:
-			random_word=random_word[0:board_rows]
+		if len(random_word) >=settings.board_rows:
+			random_word=random_word[0:settings.board_rows]
 		words_list.append(str(random_word))
 	return words_list
 
