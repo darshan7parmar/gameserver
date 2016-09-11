@@ -7,7 +7,7 @@ import re
 import string
 from .utils import *
 
-def join_validation(game_id,player_id,nick):
+def join_validation(game_id,player_id):
 
 	""" 
 	Validiation for Game Join 
@@ -19,35 +19,34 @@ def join_validation(game_id,player_id,nick):
 	content=None
 	httpstatus=None
 	game = check_if_game_exists(game_id)
+	player=check_if_player_exists(player_id)
 
 	if not game:
 		content = {'detail': 'Game does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND	
 	
-	elif player_id is not None:
-		player=check_if_player_exists(player_id)
-		
-		if not player:
-			content = {'detail': 'Player does not exist'}
-			httpstatus=status.HTTP_404_NOT_FOUND
+	elif player_id is not None and  not player:
+		content = {'detail': 'Player does not exist'}
+		httpstatus=status.HTTP_404_NOT_FOUND
 			
-		elif game.players.all().filter(id=player.id).exists():
-			content = {'detail': 'You have already joined the game'}
-			httpstatus=status.HTTP_406_NOT_ACCEPTABLE
+	elif player_id is not None and game.players.all().filter(id=player.id).exists():
+		content = {'detail': 'You have already joined the game'}
+		httpstatus=status.HTTP_406_NOT_ACCEPTABLE
 
 	elif check_if_max_limit_reached(game):
 		content = {'detail': 'Maximum Player Already Joined'}
 		httpstatus=status.HTTP_406_NOT_ACCEPTABLE	 
-	
+
 	else:
-		isValid=True	
-		player=create_player(nick)	
+		isValid=True
+		if player_id is None:	
+			player=create_player(game)	
 
 	return return_dictionary(isValid,game,player,content,httpstatus)
 
 
 
-def info_validation():
+def info_validation(game_id,player_id):
 
 	""" 
 	Validiation for Game Info 
@@ -61,16 +60,15 @@ def info_validation():
 	httpstatus=None
 
 	game = check_if_game_exists(game_id)
-	
+	player= check_if_player_exists(player_id)
+
 	if not game:
 		content = {'detail': 'Game does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND
 	
-	elif True:
-		player= check_if_player_exists(player_id)
-		if not player:
-			content = {'detail': 'Player does not exist'}
-			httpstatus=status.HTTP_404_NOT_FOUND	
+	if not player:
+		content = {'detail': 'Player does not exist'}
+		httpstatus=status.HTTP_404_NOT_FOUND	
 	
 	elif not game.players.all().filter(id=player.id).exists():
 		content = {'detail': 'Player not authorized'}
@@ -98,17 +96,15 @@ def start_validation(game_id,player_id):
 
 	# Check if Game exists
 	game = check_if_game_exists(game_id)
+	player=check_if_player_exists(player_id)
 	
 	if not game:
 		content = {'detail': 'Game does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND
 
-	elif True:
-		player=check_if_player_exists(player_id)
-	
-		if not player:
-			content = {'detail': 'Player does not exist'}
-			httpstatus=status.HTTP_404_NOT_FOUND
+	elif not player:
+		content = {'detail': 'Player does not exist'}
+		httpstatus=status.HTTP_404_NOT_FOUND
 
 	#Check if Player is admin
 	elif not game.admin_player.id == int(player_id):
@@ -145,17 +141,16 @@ def play_validation(game_id,player_id,word,start_loc,direction):
 	httpstatus=None
 
 	game = check_if_game_exists(game_id)
-	
+	player=check_if_player_exists(player_id)
+
 	if not game:
 		content = {'detail': 'Game does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND
 
 	#Check if Player Exists
-	elif True:
-		player=check_if_player_exists(player_id)
-		if not player:
-			content = {'detail': 'Player does not exist'}
-			httpstatus=status.HTTP_404_NOT_FOUND
+	elif not player:
+		content = {'detail': 'Player does not exist'}
+		httpstatus=status.HTTP_404_NOT_FOUND
 
 	elif not game.players.all().filter(id=player.id).exists():
 		content = {'detail': 'Player not authorized'}
@@ -201,17 +196,16 @@ def pass_validation(game_id,player_id):
 	httpstatus=None
 	
 	game = check_if_game_exists(game_id)
+	player=check_if_player_exists(player_id)
+	
 	if not game:
 		content = {'detail': 'Game does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND
 
 	#Check if Player Exists
-	elif True:
-		player=check_if_player_exists(player_id)
-
-		if not player:
-			content = {'detail': 'Player does not exist'}
-			httpstatus=status.HTTP_404_NOT_FOUND	
+	elif not player:
+		content = {'detail': 'Player does not exist'}
+		httpstatus=status.HTTP_404_NOT_FOUND	
 
 	elif not game.players.all().filter(id=player.id).exists():
 		content = {'detail': 'Player not authorized'}

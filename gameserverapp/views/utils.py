@@ -80,14 +80,10 @@ def place_random_char(grid):
 Create functions below  
 """
 
-def create_player(nick):
-
-	if nick is None or nick.strip()== "":
-		player=Player.objects.create()
-		player.nick="player"+str(player.id)
-		player.save()
-	else:
-		player=Player.objects.create(nick=str(nick))
+def create_player(game):
+	player=Player.objects.create()
+	player.nick="player"+str(player.id)
+	player.save()
 	return player
 
 
@@ -95,8 +91,6 @@ def create_player(nick):
 """ 
 Validation functions below  
 """
-
-
 def check_if_game_exists(game_id):
 	if game_id is not None:
 		try:

@@ -22,9 +22,9 @@ from .validations import *
 def create(request):
 	#Only Post Requests are allowed
 	data=request.data
-	nick=data.get('nick')
+	nick=None
 	player_id=data.get('player_id')
-	
+	game=None
 	if player_id is not None:
 		player=check_if_player_exists(player_id)
 		
@@ -33,7 +33,7 @@ def create(request):
 			return Response(content,status=status.HTTP_404_NOT_FOUND)	
 	
 	else:
-		player=create_player(nick)
+		player=create_player(game)
 	
 	#Create Board
 	grid = initialize_grid(settings.board_rows,settings.board_cols)
@@ -66,10 +66,10 @@ def create(request):
 def join(request):
 	data = request.data
 	game_id = data.get('game_id')
-	nick = data.get('nick')
+	nick = None
 	player_id=data.get('player_id')
 
-	validated_data=join_validation(game_id,player_id,nick)
+	validated_data=join_validation(game_id,player_id)
 	
 	if not validated_data['is_valid']:
 		return Response(validated_data['content'],status=validated_data['status'])
@@ -82,7 +82,7 @@ def join(request):
 	scores[player.nick]=0
 	game.scores=scores
 	game.save()
-	content={'player_id':player.id}
+	content={'player_id':player.id,'nick':player.nick}
 	return Response(content,status=status.HTTP_201_CREATED)
 
 
