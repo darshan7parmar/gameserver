@@ -13,6 +13,7 @@ class Board(models.Model):
 	board_rows=models.IntegerField(default=15)
 	board_cols=models.IntegerField(default=15)
 	num_words=models.IntegerField(default=10)
+	placed_words=JSONField()
 	words_list=ArrayField(models.CharField(max_length=50))
 
 class Game(models.Model):

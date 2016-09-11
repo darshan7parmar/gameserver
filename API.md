@@ -7,7 +7,10 @@ GameServer API
 	Response :
 		201 : game_id  game created
 		404 : player does not exists if player id provided.
-
+	
+	Example: 
+	
+	curl -H "Content-Type: application/json" -X POST http://localhost:8000/gameserver/game/create
 
 2. POST /gameserver/game/join
 	Info : a user can join game on server 

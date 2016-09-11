@@ -32,30 +32,63 @@ def get_random_words(num_words):
 
 
 def generate_grid(grid,words_list):
-	placed_wordlist=[]
 	words_list.sort(key=lambda word: len(word), reverse=True)
+	
 	# Algorithm starts
 	success=False
+	placed_dict={}
+	
 	while not success:
+		placed_count=0
+		placed_dict={}
 		for i in range(0,len(words_list)):
-			word_not_placed=False
+			
+			word_placed=False
 			word=words_list[i]
-			while not word_not_placed:
-				random_i=random.choice(0,range(len(grid)))
-				random_j=random.choice(0,range(len(grid)))
+			word_len=len(word)
+			
+			while not word_placed:
 				random_dir=random.choice(["HOR","VER"])
 				if random_dir == "HOR":
-					check_if_feasible_horizonal(word,grid,random_i,random_j)
+					random_i=random.randint(0,len(grid)-1)
+					random_j=random.randint(0,len(grid[0])-1-word_len)			
+					if check_if_feasible_horizontal(word,grid,random_i,random_j):
+						place_word_horizontal(word,grid,random_i,random_j)
+						word_placed=True
+						placed_count=placed_count+1
+						placed_dict[word]={"location":[random_i,random_j],"direction":random_dir}
 				else:
-					check_if_feasible_vertical(word,grid,random_i,random_j)
+					random_i=random.randint(0,len(grid)-1-word_len)
+					random_j=random.randint(0,len(grid[0])-1)
+					if check_if_feasible_vertical(word,grid,random_i,random_j):
+						place_word_vertical(word,grid,random_i,random_j)
+						word_placed=True
+						placed_count=placed_count+1
+						placed_dict[word]={"location":[random_i,random_j],"direction":random_dir}
 
+		if placed_count == len(words_list):
+			success=True	
 	place_random_char(grid)
-
-
+	return placed_dict
 
 
 def check_if_feasible_horizontal(word,grid,random_i,random_j):
-	pass
+	for k in range(0,len(word)):
+		if not grid[random_i][random_j] == "-":
+			if not grid[random_i][random_j] == word[k]:
+				return False
+		random_j=random_j+1
+	return True
+
+def check_if_feasible_vertical(word,grid,random_i,random_j):
+	for k in range(0,len(word)):
+		if not grid[random_i][random_j] == "-":
+			if not grid[random_i][random_j] == word[k]:
+				return False
+		random_i=random_i+1
+	return True
+
+
 
 
 def place_word_horizontal(word,grid,i,j):

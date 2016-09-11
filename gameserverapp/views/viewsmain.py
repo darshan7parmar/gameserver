@@ -38,9 +38,9 @@ def create(request):
 	#Create Board
 	grid = initialize_grid(settings.board_rows,settings.board_cols)
 	words_list=get_random_words(settings.num_words)
-	#generate_grid(grid,words_list)
+	placed_dict=generate_grid(grid,words_list)
 	board = Board.objects.create(grid=grid,board_rows=settings.board_rows,
-	board_cols=settings.board_cols,words_list=words_list)
+	board_cols=settings.board_cols,words_list=words_list,placed_words=placed_dict)
 	
 	#Create Game
 	turn_seq=[]
