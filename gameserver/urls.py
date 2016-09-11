@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^gameserver/game/start', views.start),
     url(r'^gameserver/game/play', views.play),
     url(r'^gameserver/game/pass', views.pass_turn),
+    url(r'^gameserver/game/locate', views.locate_word),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', admin.site.urls),
 ]

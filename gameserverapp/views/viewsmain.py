@@ -105,7 +105,7 @@ def info(request):
 	
 	gamedata=GameSerializer(game)
 	boardata=BoardSerializer(game.board)
-	return Response({"game":gamedata.data,"board":boardata.data},status.HTTP_201_CREATED)
+	return Response({"game":gamedata.data,"board":boardata.data},status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -125,9 +125,9 @@ def start(request):
 
 	game.game_status="s"
 	game.save()	
-	content=GameSerializer(game)
+	content={"grid":game.board.grid,"status":game.get_game_status_display(),"turn_sequence":game.turn_sequence}
 
-	return Response(content.data,status=status.HTTP_201_CREATED)
+	return Response(content,status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -176,7 +176,9 @@ def play(request):
 		game.game_status="f"
 	
 	game.save()	
-	return Response({"detail":"success"},status=status.HTTP_201_CREATED)
+	playerscore=scores[player.nick]
+	content={"detail":"success","score awarded":1,"your total score":playerscore}
+	return Response(content,status=status.HTTP_200_OK)
 
 
 
@@ -200,7 +202,23 @@ def pass_turn(request):
 	if game.pass_count >= game.players.all().count():
 		game.game_status="f"
 	game.save()
-	return Response({"detail":"Game successfully passed"},status=status.HTTP_100_CONTINUE)	
+	return Response({"detail":"Game successfully passed"},status=status.HTTP_200_OK)	
 
 
+
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def locate_word(request):
+	data=request.data
+	player_id=data.get('player_id')
+	game_id=data.get('game_id')
+	
+	validated_data=info_validation(game_id,player_id)
+	if not validated_data['is_valid']:
+		return Response(validated_data['content'],status=validated_data['status'])
+
+	game=validated_data['game']
+	player=validated_data['player']
+	content=game.board.placed_words
+	return Response({"placed_word":content,"grid":game.board.grid},status=status.HTTP_200_OK)	
 

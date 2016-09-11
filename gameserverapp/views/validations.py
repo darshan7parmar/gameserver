@@ -12,7 +12,7 @@ def join_validation(game_id,player_id):
 	""" 
 	Validiation for Game Join 
 	"""
-
+	
 	isValid=False
 	game=None
 	player=None
