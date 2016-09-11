@@ -35,10 +35,27 @@ def generate_grid(grid,words_list):
 	placed_wordlist=[]
 	words_list.sort(key=lambda word: len(word), reverse=True)
 	# Algorithm starts
-	for i in range(0,len(words_list)):
-		word=words_list[i]
-		place_word_horizontal(word,grid,i,0)
+	success=False
+	while not success:
+		for i in range(0,len(words_list)):
+			word_not_placed=False
+			word=words_list[i]
+			while not word_not_placed:
+				random_i=random.choice(0,range(len(grid)))
+				random_j=random.choice(0,range(len(grid)))
+				random_dir=random.choice(["HOR","VER"])
+				if random_dir == "HOR":
+					check_if_feasible_horizonal(word,grid,random_i,random_j)
+				else:
+					check_if_feasible_vertical(word,grid,random_i,random_j)
+
 	place_random_char(grid)
+
+
+
+
+def check_if_feasible_horizontal(word,grid,random_i,random_j):
+	pass
 
 
 def place_word_horizontal(word,grid,i,j):

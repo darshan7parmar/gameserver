@@ -11,7 +11,7 @@ from gameserverapp.serializers import *
 from gameserver import settings
 import random
 import re
-from .utils import *
+from .validations import *
 
 
 # Create your views here.
@@ -38,7 +38,7 @@ def create(request):
 	#Create Board
 	grid = initialize_grid(settings.board_rows,settings.board_cols)
 	words_list=get_random_words(settings.num_words)
-	generate_grid(grid,words_list)
+	#generate_grid(grid,words_list)
 	board = Board.objects.create(grid=grid,board_rows=settings.board_rows,
 	board_cols=settings.board_cols,words_list=words_list)
 	
@@ -69,30 +69,13 @@ def join(request):
 	nick = data.get('nick')
 	player_id=data.get('player_id')
 
-	game = check_if_game_exists(game_id)
-
-	if not game:
-		content = {'detail': 'Game does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
-
-	if player_id is not None:
-		player=check_if_player_exists(player_id)
-		
-		if not player:
-			content = {'detail': 'Player does not exist'}
-			return Response(content,status=status.HTTP_404_NOT_FOUND)	
-	else:
-		maxlimitbool=check_if_max_limit_reached(game)
-		if maxlimitbool:
-			content = {'detail': 'Maximum Player Already Joined'}
-			return Response(content,status=status.HTTP_406_NOT_ACCEPTABLE)	 
-		
-		player=create_player(nick)	
-	# if player has already joined game
-	if  game.players.all().filter(id=player.id).exists():
-		content = {'detail': 'You have already joined the game'}
-		return Response(content,status=status.HTTP_406_NOT_ACCEPTABLE)
+	validated_data=join_validation(game_id,player_id,nick)
 	
+	if not validated_data['is_valid']:
+		return Response(validated_data['content'],status=validated_data['status'])
+
+	game=validated_data['game']
+	player=validated_data['player']
 	game.players.add(player)
 	game.turn_sequence.append(player.nick)
 	scores=game.scores
@@ -111,22 +94,15 @@ def info(request):
 	data=request.data
 	game_id=data.get('game_id')
 	player_id=data.get('player_id')
-
-	game = check_if_game_exists(game_id)
 	
-	if not game:
-		content = {'detail': 'Game does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
-
-	player= check_if_player_exists(player_id)
-	if not player:
-		content = {'detail': 'Player does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)		
+	validated_data=info_validation(game_id,player_id)
 	
-	if not game.players.all().filter(id=player.id).exists():
-		content = {'detail': 'Player not authorized'}
-		return Response(content,status=status.HTTP_401_UNAUTHORIZED)
-
+	if not validated_data['is_valid']:
+		return Response(validated_data['content'],status=validated_data['status'])
+	
+	game=validated_data['game']
+	player=validated_data['player']
+	
 	gamedata=GameSerializer(game)
 	boardata=BoardSerializer(game.board)
 	return Response({"game":gamedata.data,"board":boardata.data},status.HTTP_201_CREATED)
@@ -139,36 +115,13 @@ def start(request):
 	game_id=data.get('game_id')
 	player_id=data.get('player_id')
 
-	# Check if Game exists
-	game = check_if_game_exists(game_id)
+	validated_data=start_validation(game_id,player_id)
 	
-	if not game:
-		content = {'detail': 'Game does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
+	if not validated_data['is_valid']:
+		return Response(validated_data['content'],status=validated_data['status'])
 
-	#Check if Player Exists
-	player=check_if_player_exists(player_id)
-	
-	if not player:
-		content = {'detail': 'Player does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
-
-	#Check if Player is admin
-	if not game.admin_player.id == int(player_id):
-		content={'detail':'You are not authorized to start this game'}
-		return Response(content,status=status.HTTP_401_UNAUTHORIZED)
-
-	#start the game by changing status and 
-	num_players=game.players.all().count()
-	if num_players < game.min_players :
-		content={'detail': 'Please wait for more players to join'}
-		return Response(content,status=status.HTTP_417_EXPECTATION_FAILED)
-	
-	# if game is not in waiting state
-
-	if game.game_status != "w":
-		content={'detail': 'Game Already Started or Finished'}
-		return Response(content,status=status.HTTP_417_EXPECTATION_FAILED)	
+	game=validated_data['game']
+	player=validated_data['player']
 
 	game.game_status="s"
 	game.save()	
@@ -188,44 +141,14 @@ def play(request):
 	start_loc=data.get('start_loc')
 	direction=data.get('direction')
 	
-	game = check_if_game_exists(game_id)
-	
-	if not game:
-		content = {'detail': 'Game does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
-
-	#Check if Player Exists
-	player=check_if_player_exists(player_id)
-
-	if not player:
-		content = {'detail': 'Player does not exist'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)	
-
-	if not game.players.all().filter(id=player.id).exists():
-		content = {'detail': 'Player not authorized'}
-		return Response(content,status=status.HTTP_401_UNAUTHORIZED)
-	
-	if not game.game_status == 's':
-		content = {'detail': 'Game not started or finished'}
-		return Response(content,status=status.HTTP_401_UNAUTHORIZED)
-
-	if not game.current_player.id == player.id:
-		content = {'detail': 'It is not your turn to play'}
-		return Response(content,status=status.HTTP_401_UNAUTHORIZED)
-
-	if word is None or word.strip()== "":
-		content = {'detail': 'Word can not be blank or None'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
-
-	if direction is None or (direction != "RIGHT" and direction != "DOWN"):
-		content = {'detail': 'Direction can be right or down'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
-
-	if start_loc is None or len(start_loc) !=2:
-		content = {'detail': 'start location must be provided or contain two values only.'}
-		return Response(content,status=status.HTTP_404_NOT_FOUND)
+	validated_data=play_validation(game_id,player_id,word,start_loc,direction)
 
 
+	if not validated_data['is_valid']:
+		return Response(validated_data['content'],status=validated_data['status'])
+
+	game=validated_data['game']
+	player=validated_data['player']
 	#Change turn 
 	game.pass_count=0
 	change_turn_sequence(game)
@@ -254,6 +177,30 @@ def play(request):
 	
 	game.save()	
 	return Response({"detail":"success"},status=status.HTTP_201_CREATED)
+
+
+
+
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def pass_turn(request):
+	data=request.data
+	player_id=data.get('player_id')
+	game_id=data.get('game_id')
+	
+	validated_data=pass_validation(game_id,player_id)
+	if not validated_data['is_valid']:
+		return Response(validated_data['content'],status=validated_data['status'])
+
+	game=validated_data['game']
+	player=validated_data['player']
+
+	game.pass_count=game.pass_count+1;
+	change_turn_sequence(game)
+	if game.pass_count >= game.players.all().count():
+		game.game_status="f"
+	game.save()
+	return Response({"detail":"Game successfully passed"},status=status.HTTP_100_CONTINUE)	
 
 
 
@@ -309,11 +256,4 @@ def change_turn_sequence(game):
 	game.current_player=game.players.all().filter(nick=turn_seq[0])[0]
 	game.save()
 
-
-@api_view(['POST'])
-@parser_classes((JSONParser,))
-def passturn(request):
-	data=request.data
-	player_id=data.get('player_id')
-	game_id=data.get('game_id')
 
