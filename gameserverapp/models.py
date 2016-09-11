@@ -8,6 +8,7 @@ class Player(models.Model):
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.nick)
 
+
 class Board(models.Model):
 	grid=ArrayField(ArrayField(models.CharField(max_length=1)),null=True)
 	board_rows=models.IntegerField(default=15)
@@ -15,6 +16,7 @@ class Board(models.Model):
 	num_words=models.IntegerField(default=10)
 	placed_words=JSONField()
 	words_list=ArrayField(models.CharField(max_length=50))
+
 
 class Game(models.Model):
 	STATUS = (
@@ -32,6 +34,7 @@ class Game(models.Model):
 	min_players=models.IntegerField()
 	max_players=models.IntegerField()
 	pass_count=models.IntegerField()
+	
 	def __str__(self):              # __unicode__ on Python 2
 		return str(self.id)
 	

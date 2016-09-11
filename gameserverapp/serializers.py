@@ -6,7 +6,7 @@ from rest_framework import serializers
 class BoardSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Board
-		fields = '__all__'
+		exclude = ('placed_words',)
 
 
 
@@ -17,9 +17,11 @@ class GameSerializer(serializers.ModelSerializer):
 	current_player = serializers.StringRelatedField()
 	players = serializers.StringRelatedField(many=True)
 	game_status = serializers.SerializerMethodField()
+	
 	class Meta:
 		model = Game
-		fields = '__all__'
+		exclude = ('players','min_players','max_players')
+
 	def get_game_status(self,obj):
 		return obj.get_game_status_display()	
 

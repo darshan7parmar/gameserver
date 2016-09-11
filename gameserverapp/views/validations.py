@@ -34,7 +34,7 @@ def join_validation(game_id,player_id):
 		httpstatus=status.HTTP_406_NOT_ACCEPTABLE
 
 	elif check_if_max_limit_reached(game):
-		content = {'detail': 'Maximum Player Already Joined'}
+		content = {'detail': 'Maximum players already joined this game'}
 		httpstatus=status.HTTP_406_NOT_ACCEPTABLE	 
 
 	else:
@@ -119,7 +119,7 @@ def start_validation(game_id,player_id):
 	# if game is not in waiting state
 
 	elif game.game_status != "w":
-		content={'detail': 'Game Already Started or Finished'}
+		content={'detail': 'Game already Started or Finished'}
 		httpstatus=status.HTTP_417_EXPECTATION_FAILED	
 
 	else:
