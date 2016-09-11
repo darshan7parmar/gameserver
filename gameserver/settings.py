@@ -128,7 +128,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-ON_HEROKU=False
+ON_HEROKU=True
 
 
 min_players=2
