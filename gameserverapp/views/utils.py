@@ -26,6 +26,8 @@ def get_random_words(num_words):
 	for i in range(0,num_words):
 		random_word=random.choice(WORDS)
 		random_word = re.sub('[^0-9a-zA-Z]+', '', random_word)
+		if len(random_word) >=board_rows:
+			random_word=random_word[0:board_rows]
 		words_list.append(str(random_word))
 	return words_list
 
@@ -157,6 +159,10 @@ def check_if_max_limit_reached(game):
 		return True
 	return False
 
+
+""" 
+Searching the word in grid functions 
+"""
 
 
 def find_word(game,word,start_loc,direction):

@@ -20,7 +20,12 @@ from .validations import *
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def create(request):
-	#Only Post Requests are allowed
+	""" 
+	@create method
+	Request Params : player_id [optional]
+	Response: JSON of game_id,player_id,nick 
+	"""
+
 	data=request.data
 	nick=None
 	player_id=data.get('player_id')
@@ -64,6 +69,12 @@ def create(request):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def join(request):
+	""" 
+	@join method
+	Request Params : game_id,player_id [optional]
+	Response: JSON of player_id,nick 
+	"""
+
 	data = request.data
 	game_id = data.get('game_id')
 	nick = None
@@ -91,6 +102,11 @@ def join(request):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def info(request):
+	""" 
+	@Info method
+	Request Params : game_id,player_id
+	Response: Game information 
+	"""
 	data=request.data
 	game_id=data.get('game_id')
 	player_id=data.get('player_id')
@@ -111,6 +127,11 @@ def info(request):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def start(request):
+	""" 
+	@start method
+	Request Params : game_id,player_id
+	Response: Game Status Information 
+	"""
 	data=request.data
 	game_id=data.get('game_id')
 	player_id=data.get('player_id')
@@ -133,6 +154,11 @@ def start(request):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def play(request):
+	""" 
+	@play method
+	Request Params : game_id,player_id
+	Response: player score information 
+	"""
 	data=request.data
 	player_id=data.get('player_id')
 	game_id=data.get('game_id')
@@ -186,6 +212,11 @@ def play(request):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def pass_turn(request):
+	""" 
+	@pass_turn method
+	Request Params : game_id,player_id
+	Response: Informative message about turn pass 
+	"""
 	data=request.data
 	player_id=data.get('player_id')
 	game_id=data.get('game_id')
@@ -209,6 +240,11 @@ def pass_turn(request):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def locate_word(request):
+	""" 
+	@locate_word method
+	Request Params : game_id,player_id
+	Response: all words informations with it's location 
+	"""
 	data=request.data
 	player_id=data.get('player_id')
 	game_id=data.get('game_id')
