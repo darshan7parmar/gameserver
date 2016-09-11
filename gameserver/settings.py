@@ -163,6 +163,7 @@ STATICFILES_DIRS = (
 import dj_database_url
 
 if ON_HEROKU:
+    DEBUG = False
     DATABASE_URL = 'postgresql://postgresql'
 else:
     DATABASE_URL = 'postgres://admin:password@localhost:5432/gameserverdb'
@@ -174,4 +175,3 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ALLOWED_HOSTS = ['*']
 
-#DEBUG = False

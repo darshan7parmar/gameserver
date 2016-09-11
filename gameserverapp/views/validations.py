@@ -12,7 +12,7 @@ def join_validation(game_id,player_id):
 	""" 
 	Validiation for Game Join 
 	"""
-	
+
 	isValid=False
 	game=None
 	player=None
@@ -66,7 +66,7 @@ def info_validation(game_id,player_id):
 		content = {'detail': 'Game does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND
 	
-	if not player:
+	elif not player:
 		content = {'detail': 'Player does not exist'}
 		httpstatus=status.HTTP_404_NOT_FOUND	
 	
